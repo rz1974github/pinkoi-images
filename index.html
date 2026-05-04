@@ -102,7 +102,7 @@
       color: var(--text);
       text-decoration: none;
     }
-    
+
     .stock-link:hover {
       text-decoration: underline;
       color: var(--accent);
@@ -142,7 +142,11 @@
     td:nth-child(3),
     td:nth-child(4),
     td:nth-child(5),
-    td:nth-child(6) {
+    td:nth-child(6),
+    td:nth-child(7),
+    td:nth-child(8),
+    td:nth-child(9),
+    td:nth-child(10) {
       text-align: right;
     }
 
@@ -180,7 +184,7 @@
     }
 
     /* 讓備註欄盡可能佔滿剩下的寬度 */
-    td:nth-child(7) {
+    td:nth-child(11) {
       width: 100%;
     }
 
@@ -292,7 +296,8 @@
       </div>
     </header>
 
-    <div id="pagination-controls" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.7); padding: 6px 12px; border-radius: 8px;">
+    <div id="pagination-controls"
+      style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.7); padding: 6px 12px; border-radius: 8px;">
       <div style="display: flex; gap: 8px; align-items: center;">
         <button id="prev-page-btn" class="btn-secondary" style="padding: 4px 8px;" disabled>上一頁</button>
         <span id="page-info" style="font-size: 0.8rem; color: var(--text);">第 1 頁 / 共 1 頁</span>
@@ -300,7 +305,8 @@
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
         <label for="items-per-page" style="font-size: 0.8rem; color: var(--muted);">每頁顯示:</label>
-        <select id="items-per-page" style="background: rgba(15, 23, 42, 0.9); color: var(--text); border: 1px solid rgba(148, 163, 184, 0.4); border-radius: 4px; padding: 2px 4px; font-size: 0.8rem; outline: none;">
+        <select id="items-per-page"
+          style="background: rgba(15, 23, 42, 0.9); color: var(--text); border: 1px solid rgba(148, 163, 184, 0.4); border-radius: 4px; padding: 2px 4px; font-size: 0.8rem; outline: none;">
           <option value="10" selected>10 筆</option>
           <option value="15">15 筆</option>
           <option value="20">20 筆</option>
@@ -320,8 +326,11 @@
             <th>漲跌</th>
             <th>漲跌幅</th>
             <th>成交量</th>
-            <th>交易記錄</th>
+            <th>成本價</th>
+            <th>報酬率</th>
             <th>現存股數</th>
+            <th>損益</th>
+            <th>我的記錄</th>
           </tr>
         </thead>
         <tbody id="stock-table-body">
@@ -332,20 +341,35 @@
     <footer>
       <div style="display: flex; align-items: center; gap: 6px;">
         <p style="margin: 0;">自動更新頻率：<span id="refresh-interval">12 秒</span></p>
-        <button class="interval-btn btn-secondary" data-ms="6000" style="padding: 2px 6px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer;">6秒</button>
-        <button class="interval-btn btn-secondary" data-ms="12000" style="padding: 2px 6px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer;">12秒</button>
-        <button class="interval-btn btn-secondary" data-ms="30000" style="padding: 2px 6px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer;">30秒</button>
+        <button class="interval-btn btn-secondary" data-ms="6000"
+          style="padding: 2px 6px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer;">6秒</button>
+        <button class="interval-btn btn-secondary" data-ms="12000"
+          style="padding: 2px 6px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer;">12秒</button>
+        <button class="interval-btn btn-secondary" data-ms="30000"
+          style="padding: 2px 6px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer;">30秒</button>
         <p style="margin: 0; margin-left: 4px;">&nbsp;|&nbsp; 最後更新：<span id="last-updated">尚未更新</span></p>
       </div>
       <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
         <div style="display: flex; align-items: center; gap: 8px;">
           <p style="margin: 0;">即時報價來源：Fugle Market Data API</p>
-          <button id="settings-button" title="設定 API Key" style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text);">🔑 API Key</button>
+          <button id="settings-button" title="設定 API Key"
+            style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text);">🔑
+            API Key</button>
         </div>
         <div style="display: flex; gap: 8px;">
-          <button id="github-sync-button" title="GitHub Gist 雲端同步" style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text); display: flex; align-items: center; gap: 4px;"><svg height="12" width="12" viewBox="0 0 16 16" style="fill: currentColor;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>GitHub 同步</button>
-          <button id="export-button" title="儲存清單與備註" style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text);">📤 儲存記錄</button>
-          <button id="import-button" title="匯入清單與備註" style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text);">📥 匯入記錄</button>
+          <button id="github-sync-button" title="GitHub Gist 雲端同步"
+            style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text); display: flex; align-items: center; gap: 4px;"><svg
+              height="12" width="12" viewBox="0 0 16 16" style="fill: currentColor;">
+              <path
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+              </path>
+            </svg>GitHub 同步</button>
+          <button id="export-button" title="儲存清單與備註"
+            style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text);">📤
+            儲存記錄</button>
+          <button id="import-button" title="匯入清單與備註"
+            style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text);">📥
+            匯入記錄</button>
           <input type="file" id="import-file-input" accept=".json" style="display: none;">
         </div>
       </div>
@@ -369,16 +393,21 @@
   <div id="github-sync-modal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
       <h2>GitHub Gist 雲端同步</h2>
-      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px;">請輸入具備 gist 權限的 PAT。若留空 Gist ID，上傳時將自動建立新 Gist。</p>
-      <label for="modal-github-token-input" style="display: block; font-size: 0.85rem; color: var(--text);">GitHub PAT 金鑰</label>
+      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px;">請輸入具備 gist 權限的 PAT。若留空 Gist ID，上傳時將自動建立新
+        Gist。</p>
+      <label for="modal-github-token-input" style="display: block; font-size: 0.85rem; color: var(--text);">GitHub PAT
+        金鑰</label>
       <input id="modal-github-token-input" type="password" placeholder="ghp_..." style="margin-top: 4px;">
-      <label for="modal-github-gist-id-input" style="display: block; font-size: 0.85rem; color: var(--text); margin-top: 4px;">Gist ID</label>
+      <label for="modal-github-gist-id-input"
+        style="display: block; font-size: 0.85rem; color: var(--text); margin-top: 4px;">Gist ID</label>
       <input id="modal-github-gist-id-input" type="text" placeholder="留空則上傳自動建立" style="margin-top: 4px;">
       <div class="modal-actions" style="margin-top: 12px; justify-content: space-between;">
         <button id="modal-github-cancel" class="btn-secondary">關閉</button>
         <div style="display: flex; gap: 8px;">
-          <button id="modal-github-download" class="btn-secondary" title="從 Gist 下載並覆蓋本地" style="color: var(--accent);">☁️ 下載</button>
-          <button id="modal-github-upload" title="將本地資料上傳至 Gist" style="background: var(--danger); color: white;">☁️ 上傳</button>
+          <button id="modal-github-download" class="btn-secondary" title="從 Gist 下載並覆蓋本地"
+            style="color: var(--accent);">☁️ 下載</button>
+          <button id="modal-github-upload" title="將本地資料上傳至 Gist" style="background: var(--danger); color: white;">☁️
+            上傳</button>
         </div>
       </div>
     </div>
@@ -390,6 +419,7 @@
     const STOCKLIST_KEY = 'stockList';
     const NOTES_KEY = 'stockNotes';
     const HOLDINGS_KEY = 'stockHoldings';
+    const COSTS_KEY = 'stockCosts';
     const ITEMS_PER_PAGE_KEY = 'itemsPerPage';
 
     const refreshIntervalSpan = document.getElementById('refresh-interval');
@@ -403,7 +433,7 @@
     // --- 分頁管理 ---
     let currentPage = 1;
     let itemsPerPage = parseInt(localStorage.getItem(ITEMS_PER_PAGE_KEY) || '10', 10);
-    
+
     const prevPageBtn = document.getElementById('prev-page-btn');
     const nextPageBtn = document.getElementById('next-page-btn');
     const pageInfo = document.getElementById('page-info');
@@ -536,6 +566,27 @@
 
       const savedNote = loadField(NOTES_KEY, stock.symbol);
       const savedHoldings = loadField(HOLDINGS_KEY, stock.symbol);
+      const savedCost = loadField(COSTS_KEY, stock.symbol);
+
+      const cost = parseFloat(savedCost);
+      const holdings = parseFloat(savedHoldings);
+      
+      let returnRateHtml = '-';
+      let returnClass = 'status-neutral';
+      let profitLossHtml = '-';
+      let profitClass = 'status-neutral';
+
+      if (!isNaN(cost) && cost > 0) {
+        const rate = ((stock.price - cost) / cost) * 100;
+        returnRateHtml = formatNumber(rate) + '%';
+        returnClass = rate === 0 ? 'status-neutral' : (rate > 0 ? 'status-positive' : 'status-negative');
+        
+        if (!isNaN(holdings) && holdings > 0) {
+          const profit = (stock.price - cost) * holdings;
+          profitLossHtml = formatNumber(profit);
+          profitClass = profit === 0 ? 'status-neutral' : (profit > 0 ? 'status-positive' : 'status-negative');
+        }
+      }
 
       tr.innerHTML = `
         <td><a href="https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID=${stock.symbol}" target="_blank" title="公司簡介" class="stock-link">${stock.symbol}</a></td>
@@ -544,16 +595,55 @@
         <td class="${changeClass}">${formatNumber(stock.change)}</td>
         <td class="${changeClass}">${formatNumber(stock.changePercent)}%</td>
         <td>${stock.volume ? stock.volume.toLocaleString() : '-'}</td>
+        <td><input class="note-input cost-input" type="number" step="0.1" min="0" placeholder="0.0" value="${savedCost}" data-symbol="${stock.symbol}"></td>
+        <td class="return-rate-cell ${returnClass}">${returnRateHtml}</td>
+        <td><input class="note-input holdings-input" type="number" min="0" placeholder="0" value="${savedHoldings}" data-symbol="${stock.symbol}"></td>
+        <td class="profit-loss-cell ${profitClass}">${profitLossHtml}</td>
         <td><textarea class="note-input" placeholder="備註…" data-symbol="${stock.symbol}">${savedNote}</textarea></td>
-        <td><input class="note-input" type="number" min="0" placeholder="0" value="${savedHoldings}" data-symbol="${stock.symbol}"></td>
       `;
+
+      const costInput = tr.querySelector('.cost-input');
+      const holdingsInput = tr.querySelector('.holdings-input');
+      const returnCell = tr.querySelector('.return-rate-cell');
+      const profitCell = tr.querySelector('.profit-loss-cell');
+
+      function updateCalculations() {
+        const c = parseFloat(costInput.value);
+        const h = parseFloat(holdingsInput.value);
+        
+        if (!isNaN(c) && c > 0) {
+          const rate = ((stock.price - c) / c) * 100;
+          returnCell.textContent = formatNumber(rate) + '%';
+          returnCell.className = 'return-rate-cell ' + (rate === 0 ? 'status-neutral' : (rate > 0 ? 'status-positive' : 'status-negative'));
+          
+          if (!isNaN(h) && h > 0) {
+            const p = (stock.price - c) * h;
+            profitCell.textContent = formatNumber(p);
+            profitCell.className = 'profit-loss-cell ' + (p === 0 ? 'status-neutral' : (p > 0 ? 'status-positive' : 'status-negative'));
+          } else {
+            profitCell.textContent = '-';
+            profitCell.className = 'profit-loss-cell status-neutral';
+          }
+        } else {
+          returnCell.textContent = '-';
+          returnCell.className = 'return-rate-cell status-neutral';
+          profitCell.textContent = '-';
+          profitCell.className = 'profit-loss-cell status-neutral';
+        }
+      }
+
+      costInput.addEventListener('input', updateCalculations);
+      holdingsInput.addEventListener('input', updateCalculations);
+
+      costInput.addEventListener('change', () => {
+        saveField(COSTS_KEY, stock.symbol, costInput.value);
+      });
 
       const noteInput = tr.querySelector('textarea');
       noteInput.addEventListener('change', () => {
         saveField(NOTES_KEY, stock.symbol, noteInput.value);
       });
 
-      const holdingsInput = tr.querySelector('input[type="number"]');
       holdingsInput.addEventListener('change', () => {
         saveField(HOLDINGS_KEY, stock.symbol, holdingsInput.value);
       });
@@ -655,7 +745,7 @@
       allSymbols.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })); // 保持原本排序
 
       if (allSymbols.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="8">尚未新增任何股票，請輸入代號後按「立即新增」。</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="11">尚未新增任何股票，請輸入代號後按「立即新增」。</td></tr>';
         pageInfo.textContent = `第 1 頁 / 共 1 頁`;
         prevPageBtn.disabled = true;
         nextPageBtn.disabled = true;
@@ -677,18 +767,18 @@
       const endIdx = startIdx + itemsPerPage;
       const currentSymbols = allSymbols.slice(startIdx, endIdx);
 
-      tableBody.innerHTML = '<tr><td colspan="8">讀取中…</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="11">讀取中…</td></tr>';
 
       try {
         const stocks = await fetchQuotes(currentSymbols);
 
         if (stocks.length === 0) {
-          tableBody.innerHTML = '<tr><td colspan="8">找不到股票資料，請檢查代號是否正確。</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="11">找不到股票資料，請檢查代號是否正確。</td></tr>';
           return;
         }
 
         tableBody.innerHTML = '';
-        
+
         // 確保按照 currentSymbols (已排序) 的順序渲染
         const stockMap = {};
         stocks.forEach(s => stockMap[s.symbol] = s);
@@ -698,7 +788,7 @@
 
         lastUpdatedSpan.textContent = new Date().toLocaleString();
       } catch (error) {
-        tableBody.innerHTML = `<tr><td colspan="8">更新失敗：${error.message}</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="11">更新失敗：${error.message}</td></tr>`;
       }
     }
 
@@ -754,6 +844,7 @@
         [STOCKLIST_KEY]: localStorage.getItem(STOCKLIST_KEY),
         [NOTES_KEY]: localStorage.getItem(NOTES_KEY),
         [HOLDINGS_KEY]: localStorage.getItem(HOLDINGS_KEY),
+        [COSTS_KEY]: localStorage.getItem(COSTS_KEY),
         [INTERVAL_KEY]: localStorage.getItem(INTERVAL_KEY),
         [ITEMS_PER_PAGE_KEY]: localStorage.getItem(ITEMS_PER_PAGE_KEY)
       };
@@ -763,6 +854,7 @@
       if (data[STOCKLIST_KEY]) localStorage.setItem(STOCKLIST_KEY, data[STOCKLIST_KEY]);
       if (data[NOTES_KEY]) localStorage.setItem(NOTES_KEY, data[NOTES_KEY]);
       if (data[HOLDINGS_KEY]) localStorage.setItem(HOLDINGS_KEY, data[HOLDINGS_KEY]);
+      if (data[COSTS_KEY]) localStorage.setItem(COSTS_KEY, data[COSTS_KEY]);
       if (data[INTERVAL_KEY]) {
         localStorage.setItem(INTERVAL_KEY, data[INTERVAL_KEY]);
         refreshMs = parseInt(data[INTERVAL_KEY], 10);
@@ -795,7 +887,7 @@
     // --- 匯入資料 ---
     const importButton = document.getElementById('import-button');
     const importFileInput = document.getElementById('import-file-input');
-    
+
     importButton.addEventListener('click', () => {
       importFileInput.click();
     });
@@ -870,7 +962,7 @@
 
         let url = 'https://api.github.com/gists';
         let method = 'POST';
-        
+
         if (gistId) {
           url = `https://api.github.com/gists/${gistId}`;
           method = 'PATCH';
@@ -892,7 +984,7 @@
 
         if (!res.ok) throw new Error(`API 錯誤: ${res.status}`);
         const result = await res.json();
-        
+
         if (!gistId) {
           localStorage.setItem(GITHUB_GIST_ID_STORAGE, result.id);
           modalGithubGistIdInput.value = result.id;
@@ -927,7 +1019,7 @@
         if (!res.ok) throw new Error(`API 錯誤: ${res.status}`);
         const result = await res.json();
         const fileContent = result.files['stock_dashboard_data.json']?.content;
-        
+
         if (!fileContent) throw new Error('找不到 stock_dashboard_data.json');
 
         const parsedData = JSON.parse(fileContent);
@@ -944,7 +1036,7 @@
 
     // --- 初始化 ---
     refreshIntervalSpan.textContent = (refreshMs / 1000) + ' 秒';
-    
+
     document.querySelectorAll('.interval-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const ms = parseInt(e.target.getAttribute('data-ms'), 10);
