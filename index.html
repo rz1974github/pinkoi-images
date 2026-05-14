@@ -401,6 +401,9 @@
       <label for="modal-github-gist-id-input"
         style="display: block; font-size: 0.85rem; color: var(--text); margin-top: 4px;">Gist ID</label>
       <input id="modal-github-gist-id-input" type="text" placeholder="留空則上傳自動建立" style="margin-top: 4px;">
+      <label for="modal-github-record-time"
+        style="display: block; font-size: 0.85rem; color: var(--text); margin-top: 4px;">資料日期</label>
+      <input id="modal-github-record-time" type="text" readonly style="margin-top: 4px; background: rgba(148, 163, 184, 0.1); cursor: not-allowed;" placeholder="尚未同步">
       <div class="modal-actions" style="margin-top: 12px; justify-content: space-between;">
         <button id="modal-github-cancel" class="btn-secondary">關閉</button>
         <div style="display: flex; gap: 8px;">
@@ -421,6 +424,7 @@
     const HOLDINGS_KEY = 'stockHoldings';
     const COSTS_KEY = 'stockCosts';
     const ITEMS_PER_PAGE_KEY = 'itemsPerPage';
+    const RECORD_TIME_KEY = 'recordTime';
 
     const refreshIntervalSpan = document.getElementById('refresh-interval');
     const lastUpdatedSpan = document.getElementById('last-updated');
@@ -570,17 +574,17 @@
 
       const cost = parseFloat(savedCost);
       const holdings = parseFloat(savedHoldings);
-      
+
       let returnRateHtml = '-';
       let returnClass = 'status-neutral';
       let profitLossHtml = '-';
       let profitClass = 'status-neutral';
 
-      if (!isNaN(cost) && cost > 0) {
+      if (!isNaN(cost) && cost > 0 && holdings !== 0) {
         const rate = ((stock.price - cost) / cost) * 100;
         returnRateHtml = formatNumber(rate) + '%';
         returnClass = rate === 0 ? 'status-neutral' : (rate > 0 ? 'status-positive' : 'status-negative');
-        
+
         if (!isNaN(holdings) && holdings > 0) {
           const profit = (stock.price - cost) * holdings;
           profitLossHtml = formatNumber(profit);
@@ -610,12 +614,12 @@
       function updateCalculations() {
         const c = parseFloat(costInput.value);
         const h = parseFloat(holdingsInput.value);
-        
-        if (!isNaN(c) && c > 0) {
+
+        if (!isNaN(c) && c > 0 && h !== 0) {
           const rate = ((stock.price - c) / c) * 100;
           returnCell.textContent = formatNumber(rate) + '%';
           returnCell.className = 'return-rate-cell ' + (rate === 0 ? 'status-neutral' : (rate > 0 ? 'status-positive' : 'status-negative'));
-          
+
           if (!isNaN(h) && h > 0) {
             const p = (stock.price - c) * h;
             profitCell.textContent = formatNumber(p);
@@ -846,7 +850,8 @@
         [HOLDINGS_KEY]: localStorage.getItem(HOLDINGS_KEY),
         [COSTS_KEY]: localStorage.getItem(COSTS_KEY),
         [INTERVAL_KEY]: localStorage.getItem(INTERVAL_KEY),
-        [ITEMS_PER_PAGE_KEY]: localStorage.getItem(ITEMS_PER_PAGE_KEY)
+        [ITEMS_PER_PAGE_KEY]: localStorage.getItem(ITEMS_PER_PAGE_KEY),
+        [RECORD_TIME_KEY]: localStorage.getItem(RECORD_TIME_KEY)
       };
     }
 
@@ -863,6 +868,11 @@
         localStorage.setItem(ITEMS_PER_PAGE_KEY, data[ITEMS_PER_PAGE_KEY]);
         itemsPerPage = parseInt(data[ITEMS_PER_PAGE_KEY], 10);
         itemsPerPageSelect.value = itemsPerPage.toString();
+      }
+      if (data[RECORD_TIME_KEY]) {
+        localStorage.setItem(RECORD_TIME_KEY, data[RECORD_TIME_KEY]);
+        const rTimeInput = document.getElementById('modal-github-record-time');
+        if (rTimeInput) rTimeInput.value = data[RECORD_TIME_KEY];
       }
       refreshIntervalSpan.textContent = (refreshMs / 1000) + ' 秒';
       startAutoRefresh();
@@ -920,12 +930,15 @@
     const modalGithubCancel = document.getElementById('modal-github-cancel');
     const modalGithubUpload = document.getElementById('modal-github-upload');
     const modalGithubDownload = document.getElementById('modal-github-download');
+    const modalGithubRecordTime = document.getElementById('modal-github-record-time');
 
     githubSyncButton.addEventListener('click', () => {
       const storedToken = localStorage.getItem(GITHUB_TOKEN_STORAGE) || '';
       const storedGistId = localStorage.getItem(GITHUB_GIST_ID_STORAGE) || '';
+      const storedRecordTime = localStorage.getItem(RECORD_TIME_KEY) || '';
       modalGithubTokenInput.value = storedToken;
       modalGithubGistIdInput.value = storedGistId;
+      modalGithubRecordTime.value = storedRecordTime;
       modalGithubGistIdInput.readOnly = !!storedGistId;
       githubSyncModal.style.display = 'flex';
     });
@@ -943,9 +956,19 @@
       return { token, gistId };
     }
 
+    function getFormattedRecordTime() {
+      const d = new Date();
+      const pad = n => n.toString().padStart(2, '0');
+      return `[${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}]`;
+    }
+
     modalGithubUpload.addEventListener('click', async () => {
       const { token, gistId } = saveGithubSettings();
       if (!token) return alert('請輸入 GitHub Token');
+
+      const newTime = getFormattedRecordTime();
+      localStorage.setItem(RECORD_TIME_KEY, newTime);
+      if (modalGithubRecordTime) modalGithubRecordTime.value = newTime;
 
       const dataStr = JSON.stringify(exportDataToObject(), null, 2);
       const payload = {
