@@ -310,7 +310,7 @@ function createCard(stock) {
 }
 
 function isMobileLayout() {
-  return window.matchMedia('(max-width: 640px)').matches;
+  return window.matchMedia('(max-width: 1081px)').matches;
 }
 
 function renderEmptyState(message) {

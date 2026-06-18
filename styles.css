@@ -614,7 +614,7 @@ footer p {
   }
 }
 
-@media (max-width: 900px) {
+@media (min-width: 1082px) {
   .container {
     padding: 10px;
   }
@@ -668,7 +668,7 @@ footer p {
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1081px) {
   .container {
     padding: 8px;
   }
