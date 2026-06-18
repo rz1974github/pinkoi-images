@@ -5,289 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我的股票看板</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --text: #e2e8f0;
-      --accent: #38bdf8;
-      --success: #ef4444;
-      --danger: #22c55e;
-      --muted: #94a3b8;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-      color: var(--text);
-      font-size: 12px;
-    }
-
-    .container {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 8px 12px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 1.15rem;
-    }
-
-    p {
-      margin: 1px 0;
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(15, 23, 42, 0.7);
-      padding: 4px 10px;
-      border-radius: 8px;
-    }
-
-    .controls label {
-      font-size: 0.8rem;
-      color: var(--text);
-      white-space: nowrap;
-    }
-
-    .controls input {
-      width: 10ch;
-      padding: 4px 6px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      border-radius: 6px;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text);
-      font-size: 0.8rem;
-    }
-
-    button {
-      cursor: pointer;
-      border: none;
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 0.8rem;
-      background: var(--accent);
-      color: #020617;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-    }
-
-    button:hover:not(:disabled) {
-      transform: translateY(-1px);
-      opacity: 0.95;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .stock-link {
-      color: var(--text);
-      text-decoration: none;
-    }
-
-    .stock-link:hover {
-      text-decoration: underline;
-      color: var(--accent);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: rgba(15, 23, 42, 0.85);
-      border-radius: 10px;
-      overflow: hidden;
-      font-size: 0.8rem;
-    }
-
-    thead {
-      background: rgba(30, 41, 59, 0.95);
-    }
-
-    th,
-    td {
-      padding: 1px 4px;
-      text-align: left;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-      white-space: nowrap;
-    }
-
-    th {
-      font-weight: 600;
-      color: var(--text);
-      font-size: 0.8rem;
-    }
-
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    td:nth-child(3),
-    td:nth-child(4),
-    td:nth-child(5),
-    td:nth-child(6),
-    td:nth-child(7),
-    td:nth-child(8),
-    td:nth-child(9),
-    td:nth-child(10) {
-      text-align: right;
-    }
-
-    .note-input {
-      width: 100%;
-      padding: 1px 2px;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      border-radius: 4px;
-      background: rgba(15, 23, 42, 0.8);
-      color: var(--text);
-      font-size: 0.75rem;
-    }
-
-    textarea.note-input {
-      min-width: 250px;
-      height: auto;
-      min-height: unset;
-      resize: none;
-      font-family: inherit;
-      overflow: hidden;
-      rows: 1;
-    }
-
-    input[type="number"].note-input {
-      width: 12ch;
-      min-width: unset;
-      text-align: right;
-      -moz-appearance: textfield;
-    }
-
-    input[type="number"].note-input::-webkit-outer-spin-button,
-    input[type="number"].note-input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    /* 讓備註欄盡可能佔滿剩下的寬度 */
-    td:nth-child(11) {
-      width: 100%;
-    }
-
-    .note-input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-
-    .status-positive {
-      color: var(--success);
-    }
-
-    .status-negative {
-      color: var(--danger);
-    }
-
-    .status-neutral {
-      color: var(--muted);
-    }
-
-    footer {
-      margin-top: 12px;
-      color: var(--muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    footer p {
-      margin: 0;
-    }
-
-    /* Modal Styles */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(2, 6, 23, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      backdrop-filter: blur(4px);
-    }
-
-    .modal-content {
-      background: var(--card);
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      width: 320px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content h2 {
-      margin-top: 0;
-      font-size: 1.1rem;
-      color: var(--text);
-    }
-
-    .modal-content input {
-      width: 100%;
-      padding: 8px;
-      margin: 12px 0;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      border-radius: 6px;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text);
-      font-size: 0.9rem;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .modal-actions button {
-      padding: 6px 12px;
-    }
-
-    .btn-secondary {
-      background: rgba(148, 163, 184, 0.2);
-      color: var(--text);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(148, 163, 184, 0.3);
-    }
-
-    @media (min-width: 640px) {
-      .controls {
-        /* already flex, no change needed */
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
   <div class="container">
-    <header>
+    <header class="page-header">
       <h1>我的股票看板</h1>
       <div class="controls">
         <label>股票代號</label>
@@ -296,17 +19,15 @@
       </div>
     </header>
 
-    <div id="pagination-controls"
-      style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.7); padding: 6px 12px; border-radius: 8px;">
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <button id="prev-page-btn" class="btn-secondary" style="padding: 4px 8px;" disabled>上一頁</button>
-        <span id="page-info" style="font-size: 0.8rem; color: var(--text);">第 1 頁 / 共 1 頁</span>
-        <button id="next-page-btn" class="btn-secondary" style="padding: 4px 8px;" disabled>下一頁</button>
+    <div id="pagination-controls" class="panel pagination-bar">
+      <div class="pagination-group pagination-nav">
+        <button id="prev-page-btn" class="btn-secondary pagination-button" disabled>上一頁</button>
+        <span id="page-info" class="page-info">第 1 頁 / 共 1 頁</span>
+        <button id="next-page-btn" class="btn-secondary pagination-button" disabled>下一頁</button>
       </div>
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <label for="items-per-page" style="font-size: 0.8rem; color: var(--muted);">每頁顯示:</label>
-        <select id="items-per-page"
-          style="background: rgba(15, 23, 42, 0.9); color: var(--text); border: 1px solid rgba(148, 163, 184, 0.4); border-radius: 4px; padding: 2px 4px; font-size: 0.8rem; outline: none;">
+      <div class="pagination-group pagination-size">
+        <label for="items-per-page" class="pagination-label">每頁顯示:</label>
+        <select id="items-per-page" class="select-control">
           <option value="10" selected>10 筆</option>
           <option value="15">15 筆</option>
           <option value="20">20 筆</option>
@@ -316,71 +37,67 @@
       </div>
     </div>
 
-    <section>
-      <table>
-        <thead>
-          <tr>
-            <th>股票</th>
-            <th>中文名稱</th>
-            <th>最新價</th>
-            <th>漲跌</th>
-            <th>漲跌幅</th>
-            <th>成交量</th>
-            <th>成本價</th>
-            <th>報酬率</th>
-            <th>現存股數</th>
-            <th>損益</th>
-            <th>我的記錄</th>
-          </tr>
-        </thead>
-        <tbody id="stock-table-body">
-        </tbody>
-      </table>
+    <section class="table-section">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>股票</th>
+              <th>中文名稱</th>
+              <th>最新價</th>
+              <th>漲跌</th>
+              <th>漲跌幅</th>
+              <th>成交量</th>
+              <th>成本價</th>
+              <th>報酬率</th>
+              <th>現存股數</th>
+              <th>損益</th>
+              <th>我的記錄</th>
+            </tr>
+          </thead>
+          <tbody id="stock-table-body"></tbody>
+        </table>
+      </div>
+      <div id="stock-card-list" class="stock-card-list"></div>
     </section>
 
-    <footer>
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <p style="margin: 0;">自動更新頻率：<span id="refresh-interval">12 秒</span></p>
-        <button class="interval-btn btn-secondary" data-ms="6000"
-          style="padding: 2px 6px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer;">6秒</button>
-        <button class="interval-btn btn-secondary" data-ms="12000"
-          style="padding: 2px 6px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer;">12秒</button>
-        <button class="interval-btn btn-secondary" data-ms="30000"
-          style="padding: 2px 6px; font-size: 0.7rem; border: none; border-radius: 4px; cursor: pointer;">30秒</button>
-        <p style="margin: 0; margin-left: 4px;">&nbsp;|&nbsp; 最後更新：<span id="last-updated">尚未更新</span></p>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <p style="margin: 0;">即時報價來源：Fugle Market Data API</p>
-          <button id="settings-button" title="設定 API Key"
-            style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text);">🔑
-            API Key</button>
+    <footer class="page-footer">
+      <div class="footer-meta">
+        <div class="footer-inline-group footer-interval-group">
+          <p class="footer-text">自動更新頻率：<span id="refresh-interval">12 秒</span></p>
+          <button id="refresh-now-button" class="btn-secondary action-button" title="立即更新目前清單">現在更新</button>
+          <button class="interval-btn btn-secondary interval-button" data-ms="6000">6秒</button>
+          <button class="interval-btn btn-secondary interval-button" data-ms="12000">12秒</button>
+          <button class="interval-btn btn-secondary interval-button" data-ms="30000">30秒</button>
         </div>
-        <div style="display: flex; gap: 8px;">
-          <button id="github-sync-button" title="GitHub Gist 雲端同步"
-            style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text); display: flex; align-items: center; gap: 4px;"><svg
-              height="12" width="12" viewBox="0 0 16 16" style="fill: currentColor;">
+        <p class="footer-text footer-last-updated">最後更新：<span id="last-updated">尚未更新</span></p>
+      </div>
+      <div class="footer-actions">
+        <div class="footer-inline-group footer-action-row">
+          <button id="settings-button" class="btn-secondary action-button" title="設定 API Key">🔑 API Key</button>
+          <button id="github-sync-button" class="btn-secondary action-button icon-button" title="GitHub Gist 雲端同步">
+            <svg class="button-icon" height="12" width="12" viewBox="0 0 16 16">
               <path
                 d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
               </path>
-            </svg>GitHub 同步</button>
-          <button id="export-button" title="儲存清單與備註"
-            style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text);">📤
-            儲存記錄</button>
-          <button id="import-button" title="匯入清單與備註"
-            style="padding: 3px 8px; font-size: 0.75rem; background: rgba(148, 163, 184, 0.2); color: var(--text);">📥
-            匯入記錄</button>
-          <input type="file" id="import-file-input" accept=".json" style="display: none;">
+            </svg>
+            GitHub
+          </button>
+          <button id="export-button" class="btn-secondary action-button" title="儲存清單與備註">📤 上傳</button>
+          <button id="import-button" class="btn-secondary action-button" title="匯入清單與備註">📥 下載</button>
+        </div>
+        <div class="footer-source-row">
+          <p class="footer-text">即時報價來源：Fugle Market Data API</p>
+          <input type="file" id="import-file-input" class="hidden-input" accept=".json">
         </div>
       </div>
     </footer>
   </div>
 
-  <!-- API Key Modal -->
-  <div id="api-key-modal" class="modal-overlay" style="display: none;">
+  <div id="api-key-modal" class="modal-overlay is-hidden">
     <div class="modal-content">
       <h2>設定 Fugle API Key</h2>
-      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px;">請輸入您的 API 密鑰，將安全儲存於瀏覽器中。</p>
+      <p class="modal-description">請輸入您的 API 密鑰，將安全儲存於瀏覽器中。</p>
       <input id="modal-api-key-input" type="text" placeholder="在此貼上 API Key">
       <div class="modal-actions">
         <button id="modal-cancel" class="btn-secondary">取消</button>
@@ -389,699 +106,27 @@
     </div>
   </div>
 
-  <!-- GitHub Sync Modal -->
-  <div id="github-sync-modal" class="modal-overlay" style="display: none;">
+  <div id="github-sync-modal" class="modal-overlay is-hidden">
     <div class="modal-content">
       <h2>GitHub Gist 雲端同步</h2>
-      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px;">請輸入具備 gist 權限的 PAT。若留空 Gist ID，上傳時將自動建立新
-        Gist。</p>
-      <label for="modal-github-token-input" style="display: block; font-size: 0.85rem; color: var(--text);">GitHub PAT
-        金鑰</label>
-      <input id="modal-github-token-input" type="password" placeholder="ghp_..." style="margin-top: 4px;">
-      <label for="modal-github-gist-id-input"
-        style="display: block; font-size: 0.85rem; color: var(--text); margin-top: 4px;">Gist ID</label>
-      <input id="modal-github-gist-id-input" type="text" placeholder="留空則上傳自動建立" style="margin-top: 4px;">
-      <label for="modal-github-record-time"
-        style="display: block; font-size: 0.85rem; color: var(--text); margin-top: 4px;">資料日期</label>
-      <input id="modal-github-record-time" type="text" readonly style="margin-top: 4px; background: rgba(148, 163, 184, 0.1); cursor: not-allowed;" placeholder="尚未同步">
-      <div class="modal-actions" style="margin-top: 12px; justify-content: space-between;">
+      <p class="modal-description">請輸入具備 gist 權限的 PAT。若留空 Gist ID，上傳時將自動建立新 Gist。</p>
+      <label for="modal-github-token-input" class="modal-label">GitHub PAT 金鑰</label>
+      <input id="modal-github-token-input" class="modal-input-compact" type="password" placeholder="ghp_...">
+      <label for="modal-github-gist-id-input" class="modal-label modal-label-spaced">Gist ID</label>
+      <input id="modal-github-gist-id-input" class="modal-input-compact" type="text" placeholder="留空則上傳自動建立">
+      <label for="modal-github-record-time" class="modal-label modal-label-spaced">資料日期</label>
+      <input id="modal-github-record-time" class="modal-input-compact modal-input-readonly" type="text" readonly placeholder="尚未同步">
+      <div class="modal-actions modal-actions-split">
         <button id="modal-github-cancel" class="btn-secondary">關閉</button>
-        <div style="display: flex; gap: 8px;">
-          <button id="modal-github-download" class="btn-secondary" title="從 Gist 下載並覆蓋本地"
-            style="color: var(--accent);">☁️ 下載</button>
-          <button id="modal-github-upload" title="將本地資料上傳至 Gist" style="background: var(--danger); color: white;">☁️
-            上傳</button>
+        <div class="modal-action-group">
+          <button id="modal-github-download" class="btn-secondary modal-download-button" title="從 Gist 下載並覆蓋本地">☁️ 下載</button>
+          <button id="modal-github-upload" class="modal-upload-button" title="將本地資料上傳至 Gist">☁️ 上傳</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    const INTERVAL_KEY = 'refreshInterval';
-    let refreshMs = parseInt(localStorage.getItem(INTERVAL_KEY) || '12000', 10);
-    const STOCKLIST_KEY = 'stockList';
-    const NOTES_KEY = 'stockNotes';
-    const HOLDINGS_KEY = 'stockHoldings';
-    const COSTS_KEY = 'stockCosts';
-    const ITEMS_PER_PAGE_KEY = 'itemsPerPage';
-    const RECORD_TIME_KEY = 'recordTime';
-
-    const refreshIntervalSpan = document.getElementById('refresh-interval');
-    const lastUpdatedSpan = document.getElementById('last-updated');
-    const symbolsInput = document.getElementById('symbols-input');
-    const updateButton = document.getElementById('update-button');
-    const tableBody = document.getElementById('stock-table-body');
-
-    let refreshTimer = null;
-
-    // --- 分頁管理 ---
-    let currentPage = 1;
-    let itemsPerPage = parseInt(localStorage.getItem(ITEMS_PER_PAGE_KEY) || '10', 10);
-
-    const prevPageBtn = document.getElementById('prev-page-btn');
-    const nextPageBtn = document.getElementById('next-page-btn');
-    const pageInfo = document.getElementById('page-info');
-    const itemsPerPageSelect = document.getElementById('items-per-page');
-    itemsPerPageSelect.value = itemsPerPage.toString();
-
-    prevPageBtn.addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        refreshDisplay();
-      }
-    });
-
-    nextPageBtn.addEventListener('click', () => {
-      currentPage++;
-      refreshDisplay();
-    });
-
-    itemsPerPageSelect.addEventListener('change', (e) => {
-      itemsPerPage = parseInt(e.target.value, 10);
-      localStorage.setItem(ITEMS_PER_PAGE_KEY, itemsPerPage.toString());
-      currentPage = 1; // 回到第一頁
-      refreshDisplay();
-    });
-
-    // --- API Key 管理 ---
-    const API_KEY_STORAGE = 'fugleApiKey';
-    const settingsButton = document.getElementById('settings-button');
-    const apiKeyModal = document.getElementById('api-key-modal');
-    const modalApiKeyInput = document.getElementById('modal-api-key-input');
-    const modalCancel = document.getElementById('modal-cancel');
-    const modalOk = document.getElementById('modal-ok');
-
-    settingsButton.addEventListener('click', () => {
-      modalApiKeyInput.value = localStorage.getItem(API_KEY_STORAGE) || '';
-      apiKeyModal.style.display = 'flex';
-    });
-
-    modalCancel.addEventListener('click', () => {
-      apiKeyModal.style.display = 'none';
-    });
-
-    modalOk.addEventListener('click', () => {
-      const newKey = modalApiKeyInput.value.trim();
-      localStorage.setItem(API_KEY_STORAGE, newKey);
-      apiKeyModal.style.display = 'none';
-      refreshDisplay(); // 重新讀取
-    });
-
-    // --- stockList 管理 ---
-    // 格式: [{id: "2330", visible: true}, ...]
-    function loadStockList() {
-      try {
-        const raw = localStorage.getItem(STOCKLIST_KEY);
-        if (raw) {
-          const list = JSON.parse(raw);
-          if (Array.isArray(list)) return list;
-        }
-      } catch { }
-      return [];
-    }
-
-    function saveStockList(list) {
-      localStorage.setItem(STOCKLIST_KEY, JSON.stringify(list));
-    }
-
-    function getVisibleSymbols() {
-      return loadStockList().filter(s => s.visible).map(s => s.id);
-    }
-
-    // --- 通用欄位存取 ---
-    function loadField(key, symbol) {
-      try {
-        const data = JSON.parse(localStorage.getItem(key) || '{}');
-        return data[symbol] || '';
-      } catch { return ''; }
-    }
-
-    function saveField(key, symbol, value) {
-      try {
-        const data = JSON.parse(localStorage.getItem(key) || '{}');
-        if (value) {
-          data[symbol] = value;
-        } else {
-          delete data[symbol];
-        }
-        localStorage.setItem(key, JSON.stringify(data));
-      } catch (err) {
-        console.warn('儲存失敗:', err);
-      }
-    }
-
-    // --- 新增 / toggle 股票 ---
-    function addOrToggleStock(symbolId) {
-      const list = loadStockList();
-      const existing = list.find(s => s.id === symbolId);
-
-      if (existing) {
-        if (existing.visible) {
-          const yes = confirm(`股票 ${symbolId} 已在列表中，是否要關閉顯示？\n（資料與交易記錄會保留）`);
-          if (yes) {
-            existing.visible = false;
-            saveStockList(list);
-          }
-        } else {
-          existing.visible = true;
-          saveStockList(list);
-        }
-      } else {
-        list.push({ id: symbolId, visible: true });
-        saveStockList(list);
-      }
-    }
-
-    // --- 格式化 ---
-    function formatNumber(value) {
-      return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(value);
-    }
-
-    // --- 表格列 ---
-    function createRow(stock) {
-      const tr = document.createElement('tr');
-      let changeClass;
-
-      if (stock.changePercent === 0) {
-        changeClass = 'status-neutral';
-      } else {
-        changeClass = stock.change >= 0 ? 'status-positive' : 'status-negative';
-      }
-
-      const savedNote = loadField(NOTES_KEY, stock.symbol);
-      const savedHoldings = loadField(HOLDINGS_KEY, stock.symbol);
-      const savedCost = loadField(COSTS_KEY, stock.symbol);
-
-      const cost = parseFloat(savedCost);
-      const holdings = parseFloat(savedHoldings);
-
-      let returnRateHtml = '-';
-      let returnClass = 'status-neutral';
-      let profitLossHtml = '-';
-      let profitClass = 'status-neutral';
-
-      if (!isNaN(cost) && cost > 0 && holdings !== 0) {
-        const rate = ((stock.price - cost) / cost) * 100;
-        returnRateHtml = formatNumber(rate) + '%';
-        returnClass = rate === 0 ? 'status-neutral' : (rate > 0 ? 'status-positive' : 'status-negative');
-
-        if (!isNaN(holdings) && holdings > 0) {
-          const profit = (stock.price - cost) * holdings;
-          profitLossHtml = formatNumber(profit);
-          profitClass = profit === 0 ? 'status-neutral' : (profit > 0 ? 'status-positive' : 'status-negative');
-        }
-      }
-
-      tr.innerHTML = `
-        <td><a href="https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID=${stock.symbol}" target="_blank" title="公司簡介" class="stock-link">${stock.symbol}</a></td>
-        <td><a href="https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID=${stock.symbol}" target="_blank" title="公司簡介" class="stock-link">${stock.name}</a>${stock.industry ? ' <span style="color:var(--muted);font-size:0.75rem">' + stock.industry + '</span>' : ''}</td>
-        <td>${formatNumber(stock.price)}</td>
-        <td class="${changeClass}">${formatNumber(stock.change)}</td>
-        <td class="${changeClass}">${formatNumber(stock.changePercent)}%</td>
-        <td>${stock.volume ? stock.volume.toLocaleString() : '-'}</td>
-        <td><input class="note-input cost-input" type="number" step="0.1" min="0" placeholder="0.0" value="${savedCost}" data-symbol="${stock.symbol}"></td>
-        <td class="return-rate-cell ${returnClass}">${returnRateHtml}</td>
-        <td><input class="note-input holdings-input" type="number" min="0" placeholder="0" value="${savedHoldings}" data-symbol="${stock.symbol}"></td>
-        <td class="profit-loss-cell ${profitClass}">${profitLossHtml}</td>
-        <td><textarea class="note-input" placeholder="備註…" data-symbol="${stock.symbol}">${savedNote}</textarea></td>
-      `;
-
-      const costInput = tr.querySelector('.cost-input');
-      const holdingsInput = tr.querySelector('.holdings-input');
-      const returnCell = tr.querySelector('.return-rate-cell');
-      const profitCell = tr.querySelector('.profit-loss-cell');
-
-      function updateCalculations() {
-        const c = parseFloat(costInput.value);
-        const h = parseFloat(holdingsInput.value);
-
-        if (!isNaN(c) && c > 0 && h !== 0) {
-          const rate = ((stock.price - c) / c) * 100;
-          returnCell.textContent = formatNumber(rate) + '%';
-          returnCell.className = 'return-rate-cell ' + (rate === 0 ? 'status-neutral' : (rate > 0 ? 'status-positive' : 'status-negative'));
-
-          if (!isNaN(h) && h > 0) {
-            const p = (stock.price - c) * h;
-            profitCell.textContent = formatNumber(p);
-            profitCell.className = 'profit-loss-cell ' + (p === 0 ? 'status-neutral' : (p > 0 ? 'status-positive' : 'status-negative'));
-          } else {
-            profitCell.textContent = '-';
-            profitCell.className = 'profit-loss-cell status-neutral';
-          }
-        } else {
-          returnCell.textContent = '-';
-          returnCell.className = 'return-rate-cell status-neutral';
-          profitCell.textContent = '-';
-          profitCell.className = 'profit-loss-cell status-neutral';
-        }
-      }
-
-      costInput.addEventListener('input', updateCalculations);
-      holdingsInput.addEventListener('input', updateCalculations);
-
-      costInput.addEventListener('change', () => {
-        saveField(COSTS_KEY, stock.symbol, costInput.value);
-      });
-
-      const noteInput = tr.querySelector('textarea');
-      noteInput.addEventListener('change', () => {
-        saveField(NOTES_KEY, stock.symbol, noteInput.value);
-      });
-
-      holdingsInput.addEventListener('change', () => {
-        saveField(HOLDINGS_KEY, stock.symbol, holdingsInput.value);
-      });
-
-      return tr;
-    }
-
-    // --- 產業分類快取與取得 ---
-    const industryCache = {};
-    async function fetchIndustry(symbolId) {
-      if (industryCache[symbolId] !== undefined) return industryCache[symbolId];
-      try {
-        const res = await fetch(`https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInfo&data_id=${symbolId}`);
-        const data = await res.json();
-        if (data.status === 200 && data.data && data.data.length > 0) {
-          let cat = data.data[0].industry_category || '';
-          cat = cat.replace(/業$/, '');
-          industryCache[symbolId] = cat;
-          return cat;
-        }
-      } catch (e) { }
-      industryCache[symbolId] = '';
-      return '';
-    }
-
-    // --- 透過 Fugle API 取得單一股票即時報價 ---
-    async function fetchFugleQuote(symbolId, apiKey) {
-      try {
-        const res = await fetch(`https://api.fugle.tw/marketdata/v1.0/stock/intraday/quote/${symbolId}`, {
-          headers: { 'X-API-KEY': apiKey }
-        });
-        if (!res.ok) return null;
-        const data = await res.json();
-
-        const price = data.lastPrice || data.closePrice || data.previousClose || 0;
-        const change = data.change || 0;
-        const changePercent = data.changePercent || 0;
-        const volume = (data.total && data.total.tradeVolume) || 0;
-
-        return {
-          symbol: data.symbol || symbolId,
-          name: data.name || symbolId,
-          price: price,
-          change: change,
-          changePercent: changePercent,
-          volume: volume,
-          open: data.openPrice || 0,
-          high: data.highPrice || 0,
-          low: data.lowPrice || 0,
-          yestClose: data.previousClose || 0,
-          market: data.market || '',
-          isRealtime: true,
-        };
-      } catch (e) {
-        return null;
-      }
-    }
-
-    // --- 批次取得即時報價（SPA 直接請求，Bypass Backend Server）---
-    async function fetchQuotes(symbols) {
-      const apiKey = localStorage.getItem(API_KEY_STORAGE) || '';
-      if (!apiKey) {
-        throw new Error('請先在上方輸入 Fugle API Key');
-      }
-
-      const promises = symbols.map(async (sym) => {
-        const [quote, industry] = await Promise.all([
-          fetchFugleQuote(sym, apiKey),
-          fetchIndustry(sym)
-        ]);
-
-        if (!quote) {
-          return {
-            symbol: sym,
-            name: sym,
-            industry: industry,
-            price: 0,
-            change: 0,
-            changePercent: 0,
-            volume: 0,
-            open: 0,
-            high: 0,
-            low: 0,
-            yestClose: 0,
-            market: '',
-            isRealtime: false,
-          };
-        }
-        quote.industry = industry;
-        return quote;
-      });
-
-      return Promise.all(promises);
-    }
-
-    // --- 更新顯示 ---
-    async function refreshDisplay() {
-      const allSymbols = getVisibleSymbols();
-      allSymbols.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })); // 保持原本排序
-
-      if (allSymbols.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="11">尚未新增任何股票，請輸入代號後按「立即新增」。</td></tr>';
-        pageInfo.textContent = `第 1 頁 / 共 1 頁`;
-        prevPageBtn.disabled = true;
-        nextPageBtn.disabled = true;
-        return;
-      }
-
-      // 計算分頁
-      const totalPages = Math.ceil(allSymbols.length / itemsPerPage);
-      if (currentPage > totalPages) currentPage = totalPages;
-      if (currentPage < 1) currentPage = 1;
-
-      // 更新分頁 UI
-      pageInfo.textContent = `第 ${currentPage} 頁 / 共 ${totalPages} 頁 (總計 ${allSymbols.length} 筆)`;
-      prevPageBtn.disabled = (currentPage === 1);
-      nextPageBtn.disabled = (currentPage === totalPages);
-
-      // 切取當前頁面的股票代號
-      const startIdx = (currentPage - 1) * itemsPerPage;
-      const endIdx = startIdx + itemsPerPage;
-      const currentSymbols = allSymbols.slice(startIdx, endIdx);
-
-      tableBody.innerHTML = '<tr><td colspan="11">讀取中…</td></tr>';
-
-      try {
-        const stocks = await fetchQuotes(currentSymbols);
-
-        if (stocks.length === 0) {
-          tableBody.innerHTML = '<tr><td colspan="11">找不到股票資料，請檢查代號是否正確。</td></tr>';
-          return;
-        }
-
-        tableBody.innerHTML = '';
-
-        // 確保按照 currentSymbols (已排序) 的順序渲染
-        const stockMap = {};
-        stocks.forEach(s => stockMap[s.symbol] = s);
-        currentSymbols.forEach(sym => {
-          if (stockMap[sym]) tableBody.appendChild(createRow(stockMap[sym]));
-        });
-
-        lastUpdatedSpan.textContent = new Date().toLocaleString();
-      } catch (error) {
-        tableBody.innerHTML = `<tr><td colspan="11">更新失敗：${error.message}</td></tr>`;
-      }
-    }
-
-    // --- 判斷是否在交易時段（13:32 前）---
-    function isMarketOpen() {
-      const now = new Date();
-      const h = now.getHours();
-      const m = now.getMinutes();
-      return (h < 13) || (h === 13 && m < 32);
-    }
-
-    // --- 自動刷新（13:32 後自動停止）---
-    function startAutoRefresh() {
-      if (refreshTimer) {
-        clearInterval(refreshTimer);
-      }
-      refreshTimer = setInterval(() => {
-        if (isMarketOpen()) {
-          refreshDisplay();
-        } else {
-          clearInterval(refreshTimer);
-          refreshTimer = null;
-          refreshIntervalSpan.textContent = '已收盤';
-        }
-      }, refreshMs);
-    }
-
-    // --- 「立即新增」按鈕 ---
-    updateButton.addEventListener('click', () => {
-      const raw = symbolsInput.value.trim();
-      if (!raw) {
-        alert('請輸入股票代號。');
-        return;
-      }
-
-      // 支援逗號分隔一次加多個
-      const ids = raw.split(',').map(s => s.trim()).filter(Boolean);
-      ids.forEach(id => addOrToggleStock(id));
-      symbolsInput.value = '';
-      refreshDisplay();
-    });
-
-    // 按 Enter 等同點擊按鈕
-    symbolsInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        updateButton.click();
-      }
-    });
-
-    // --- 共用資料打包與解析 ---
-    function exportDataToObject() {
-      return {
-        [STOCKLIST_KEY]: localStorage.getItem(STOCKLIST_KEY),
-        [NOTES_KEY]: localStorage.getItem(NOTES_KEY),
-        [HOLDINGS_KEY]: localStorage.getItem(HOLDINGS_KEY),
-        [COSTS_KEY]: localStorage.getItem(COSTS_KEY),
-        [INTERVAL_KEY]: localStorage.getItem(INTERVAL_KEY),
-        [ITEMS_PER_PAGE_KEY]: localStorage.getItem(ITEMS_PER_PAGE_KEY),
-        [RECORD_TIME_KEY]: localStorage.getItem(RECORD_TIME_KEY)
-      };
-    }
-
-    function importDataFromObject(data) {
-      if (data[STOCKLIST_KEY]) localStorage.setItem(STOCKLIST_KEY, data[STOCKLIST_KEY]);
-      if (data[NOTES_KEY]) localStorage.setItem(NOTES_KEY, data[NOTES_KEY]);
-      if (data[HOLDINGS_KEY]) localStorage.setItem(HOLDINGS_KEY, data[HOLDINGS_KEY]);
-      if (data[COSTS_KEY]) localStorage.setItem(COSTS_KEY, data[COSTS_KEY]);
-      if (data[INTERVAL_KEY]) {
-        localStorage.setItem(INTERVAL_KEY, data[INTERVAL_KEY]);
-        refreshMs = parseInt(data[INTERVAL_KEY], 10);
-      }
-      if (data[ITEMS_PER_PAGE_KEY]) {
-        localStorage.setItem(ITEMS_PER_PAGE_KEY, data[ITEMS_PER_PAGE_KEY]);
-        itemsPerPage = parseInt(data[ITEMS_PER_PAGE_KEY], 10);
-        itemsPerPageSelect.value = itemsPerPage.toString();
-      }
-      if (data[RECORD_TIME_KEY]) {
-        localStorage.setItem(RECORD_TIME_KEY, data[RECORD_TIME_KEY]);
-        const rTimeInput = document.getElementById('modal-github-record-time');
-        if (rTimeInput) rTimeInput.value = data[RECORD_TIME_KEY];
-      }
-      refreshIntervalSpan.textContent = (refreshMs / 1000) + ' 秒';
-      startAutoRefresh();
-      currentPage = 1; // 匯入後強制回到第一頁
-      refreshDisplay();
-    }
-
-    // --- 匯出資料 ---
-    const exportButton = document.getElementById('export-button');
-    exportButton.addEventListener('click', () => {
-      const data = exportDataToObject();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const dateStr = new Date().toISOString().slice(0, 10);
-      a.download = `daily_stock_backup_${dateStr}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    // --- 匯入資料 ---
-    const importButton = document.getElementById('import-button');
-    const importFileInput = document.getElementById('import-file-input');
-
-    importButton.addEventListener('click', () => {
-      importFileInput.click();
-    });
-
-    importFileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const data = JSON.parse(event.target.result);
-          importDataFromObject(data);
-          alert('資料匯入成功！');
-        } catch (err) {
-          alert('匯入失敗：檔案格式錯誤。');
-        }
-        importFileInput.value = ''; // 允許重複選取同一個檔案
-      };
-      reader.readAsText(file);
-    });
-
-    // --- GitHub Gist 同步管理 ---
-    const GITHUB_TOKEN_STORAGE = 'githubToken';
-    const GITHUB_GIST_ID_STORAGE = 'githubGistId';
-    const githubSyncButton = document.getElementById('github-sync-button');
-    const githubSyncModal = document.getElementById('github-sync-modal');
-    const modalGithubTokenInput = document.getElementById('modal-github-token-input');
-    const modalGithubGistIdInput = document.getElementById('modal-github-gist-id-input');
-    const modalGithubCancel = document.getElementById('modal-github-cancel');
-    const modalGithubUpload = document.getElementById('modal-github-upload');
-    const modalGithubDownload = document.getElementById('modal-github-download');
-    const modalGithubRecordTime = document.getElementById('modal-github-record-time');
-
-    githubSyncButton.addEventListener('click', () => {
-      const storedToken = localStorage.getItem(GITHUB_TOKEN_STORAGE) || '';
-      const storedGistId = localStorage.getItem(GITHUB_GIST_ID_STORAGE) || '';
-      const storedRecordTime = localStorage.getItem(RECORD_TIME_KEY) || '';
-      modalGithubTokenInput.value = storedToken;
-      modalGithubGistIdInput.value = storedGistId;
-      modalGithubRecordTime.value = storedRecordTime;
-      modalGithubGistIdInput.readOnly = !!storedGistId;
-      githubSyncModal.style.display = 'flex';
-    });
-
-    modalGithubCancel.addEventListener('click', () => {
-      githubSyncModal.style.display = 'none';
-    });
-
-    // 儲存 Token 和 ID
-    function saveGithubSettings() {
-      const token = modalGithubTokenInput.value.trim();
-      const gistId = modalGithubGistIdInput.value.trim();
-      localStorage.setItem(GITHUB_TOKEN_STORAGE, token);
-      localStorage.setItem(GITHUB_GIST_ID_STORAGE, gistId);
-      return { token, gistId };
-    }
-
-    function getFormattedRecordTime() {
-      const d = new Date();
-      const pad = n => n.toString().padStart(2, '0');
-      return `[${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}]`;
-    }
-
-    modalGithubUpload.addEventListener('click', async () => {
-      const { token, gistId } = saveGithubSettings();
-      if (!token) return alert('請輸入 GitHub Token');
-
-      const newTime = getFormattedRecordTime();
-      localStorage.setItem(RECORD_TIME_KEY, newTime);
-      if (modalGithubRecordTime) modalGithubRecordTime.value = newTime;
-
-      const dataStr = JSON.stringify(exportDataToObject(), null, 2);
-      const payload = {
-        files: {
-          'stock_dashboard_data.json': {
-            content: dataStr
-          }
-        }
-      };
-
-      try {
-        modalGithubUpload.textContent = '上傳中...';
-        modalGithubUpload.disabled = true;
-
-        let url = 'https://api.github.com/gists';
-        let method = 'POST';
-
-        if (gistId) {
-          url = `https://api.github.com/gists/${gistId}`;
-          method = 'PATCH';
-          payload.description = 'Updated by Stock Dashboard';
-        } else {
-          payload.description = 'Stock Dashboard Backup';
-          payload.public = false;
-        }
-
-        const res = await fetch(url, {
-          method,
-          headers: {
-            'Authorization': `token ${token}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) throw new Error(`API 錯誤: ${res.status}`);
-        const result = await res.json();
-
-        if (!gistId) {
-          localStorage.setItem(GITHUB_GIST_ID_STORAGE, result.id);
-          modalGithubGistIdInput.value = result.id;
-          modalGithubGistIdInput.readOnly = true;
-          alert('建立 Gist 並上傳成功！');
-        } else {
-          alert('上傳更新 Gist 成功！');
-        }
-      } catch (err) {
-        alert('上傳失敗：' + err.message);
-      } finally {
-        modalGithubUpload.textContent = '☁️ 上傳';
-        modalGithubUpload.disabled = false;
-      }
-    });
-
-    modalGithubDownload.addEventListener('click', async () => {
-      const { token, gistId } = saveGithubSettings();
-      if (!token || !gistId) return alert('請輸入 GitHub Token 與 Gist ID');
-
-      try {
-        modalGithubDownload.textContent = '下載中...';
-        modalGithubDownload.disabled = true;
-
-        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-          headers: {
-            'Authorization': `token ${token}`,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
-
-        if (!res.ok) throw new Error(`API 錯誤: ${res.status}`);
-        const result = await res.json();
-        const fileContent = result.files['stock_dashboard_data.json']?.content;
-
-        if (!fileContent) throw new Error('找不到 stock_dashboard_data.json');
-
-        const parsedData = JSON.parse(fileContent);
-        importDataFromObject(parsedData);
-        alert('從 Gist 下載資料並更新成功！');
-        githubSyncModal.style.display = 'none';
-      } catch (err) {
-        alert('下載失敗：' + err.message);
-      } finally {
-        modalGithubDownload.textContent = '☁️ 下載';
-        modalGithubDownload.disabled = false;
-      }
-    });
-
-    // --- 初始化 ---
-    refreshIntervalSpan.textContent = (refreshMs / 1000) + ' 秒';
-
-    document.querySelectorAll('.interval-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const ms = parseInt(e.target.getAttribute('data-ms'), 10);
-        refreshMs = ms;
-        localStorage.setItem(INTERVAL_KEY, ms.toString());
-        refreshIntervalSpan.textContent = (ms / 1000) + ' 秒';
-        startAutoRefresh();
-      });
-    });
-
-    // 若 localStorage 無資料，預設加入幾支股票
-    if (loadStockList().length === 0) {
-      saveStockList([
-        { id: '2330', visible: true },
-        { id: '2454', visible: true },
-        { id: '2317', visible: true },
-      ]);
-    }
-
-    refreshDisplay();
-    startAutoRefresh();
-  </script>
+  <script src="app.js"></script>
 </body>
 
 </html>

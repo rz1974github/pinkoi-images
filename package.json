@@ -2,10 +2,8 @@
   "name": "DailyStock",
   "version": "1.0.0",
   "description": "台灣股票實時報價看板，支援自動更新",
-  "main": "script.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "echo \"No automated tests configured\""
   },
   "keywords": [],
   "author": "",
