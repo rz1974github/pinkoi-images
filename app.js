@@ -273,11 +273,11 @@ function createCard(stock) {
       <div class="stock-card-column stock-card-column-left">
         <div class="stock-card-field">
           <span class="stock-card-label">成本價</span>
-          <input class="note-input stock-card-input" type="number" value="${cost}" placeholder="成本價">
+          <input class="note-input stock-card-input" type="text" inputmode="decimal" value="${cost}" placeholder="成本價">
         </div>
         <div class="stock-card-field">
           <span class="stock-card-label">現存股數</span>
-          <input class="note-input stock-card-input" type="number" value="${holdings}" placeholder="股數">
+          <input class="note-input stock-card-input" type="text" inputmode="numeric" value="${holdings}" placeholder="股數">
         </div>
       </div>
       <div class="stock-card-column stock-card-column-right">
