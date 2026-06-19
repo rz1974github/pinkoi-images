@@ -26,6 +26,24 @@ const pageInfo = document.getElementById('page-info');
 const itemsPerPageSelect = document.getElementById('items-per-page');
 itemsPerPageSelect.value = itemsPerPage.toString();
 
+let activeMobileCardSymbol = null;
+
+function updateMobileCardStates(expandedSymbol) {
+  if (!isMobileLayout()) {
+    activeMobileCardSymbol = null;
+    return;
+  }
+
+  activeMobileCardSymbol = expandedSymbol || null;
+
+  const cards = stockCardList.querySelectorAll('.stock-card');
+  cards.forEach((card) => {
+    const isExpanded = activeMobileCardSymbol !== null && card.dataset.symbol === activeMobileCardSymbol;
+    card.classList.toggle('is-expanded', isExpanded);
+    card.classList.toggle('is-collapsed', !isExpanded);
+  });
+}
+
 prevPageBtn.addEventListener('click', () => {
   if (currentPage > 1) {
     currentPage--;
@@ -252,6 +270,11 @@ function createCard(stock) {
   const changePercentPrefix = stock.changePercent > 0 ? '+' : (stock.changePercent < 0 ? '-' : '');
 
   card.className = 'stock-card panel';
+  card.dataset.symbol = stock.symbol;
+  const isExpanded = isMobileLayout() && activeMobileCardSymbol === stock.symbol;
+  if (isMobileLayout()) {
+    card.classList.add(isExpanded ? 'is-expanded' : 'is-collapsed');
+  }
   card.innerHTML = `
     <div class="stock-card-header">
       <div class="stock-card-title-group">
@@ -305,6 +328,19 @@ function createCard(stock) {
   const noteInput = card.querySelector('textarea');
 
   bindStockInputs({ stock, costInput, holdingsInput, noteInput, returnCell, profitCell });
+
+  if (isMobileLayout()) {
+    card.addEventListener('click', (event) => {
+      if (event.target.closest('a, input, textarea, button, select, label')) {
+        return;
+      }
+      if (activeMobileCardSymbol === stock.symbol) {
+        updateMobileCardStates(null);
+      } else {
+        updateMobileCardStates(stock.symbol);
+      }
+    });
+  }
 
   return card;
 }
