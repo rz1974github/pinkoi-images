@@ -676,17 +676,54 @@ footer p {
 
   th,
   td {
-    padding: 8px 6px;
+    padding: 0 6px;
     vertical-align: middle;
   }
 
   .note-input {
-    min-height: 30px;
+    min-height: 36px;
+    line-height: 1.4;
   }
 
-  textarea.note-input {
-    min-width: 320px;
-    min-height: 36px;
+  td:nth-child(7) input[type="number"].note-input,
+  td:nth-child(9) input[type="number"].note-input {
+    height: 44px;
+    line-height: 44px;
+    border-radius: 0 !important;
+    padding: 0 4px !important;
+  }
+
+  td:nth-child(11) textarea.note-input {
+    padding: 0 4px !important;
+    line-height: 44px;
+    min-height: 44px;
+    height: 44px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    resize: none;
+    border-radius: 0;
+    white-space: nowrap;
+    word-break: normal;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.28) rgba(15, 23, 42, 0.24);
+  }
+
+  td:nth-child(11) textarea.note-input::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  td:nth-child(11) textarea.note-input::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.24);
+    border-radius: 999px;
+  }
+
+  td:nth-child(11) textarea.note-input::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.28);
+    border-radius: 999px;
+  }
+
+  td:nth-child(11) textarea.note-input::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.4);
   }
 
   .page-header {
