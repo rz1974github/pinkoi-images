@@ -69,6 +69,8 @@ const apiKeyModal = document.getElementById('api-key-modal');
 const modalApiKeyInput = document.getElementById('modal-api-key-input');
 const modalCancel = document.getElementById('modal-cancel');
 const modalOk = document.getElementById('modal-ok');
+let isApiKeyModalMandatory = false;
+let appInitialized = false;
 
 function showModal(modalElement) {
   modalElement.classList.remove('is-hidden');
@@ -78,20 +80,89 @@ function hideModal(modalElement) {
   modalElement.classList.add('is-hidden');
 }
 
-settingsButton.addEventListener('click', () => {
+function showApiKeyModal({ mandatory }) {
+  isApiKeyModalMandatory = mandatory;
   modalApiKeyInput.value = localStorage.getItem(API_KEY_STORAGE) || '';
+  apiKeyModal.classList.toggle('is-mandatory', mandatory);
   showModal(apiKeyModal);
+  modalApiKeyInput.focus();
+}
+
+function hideApiKeyModalIfAllowed() {
+  if (isApiKeyModalMandatory) return;
+  hideModal(apiKeyModal);
+}
+
+async function validateApiKey(apiKey) {
+  if (!apiKey) {
+    return { valid: false, message: '請輸入 Fugle API Key。' };
+  }
+
+  try {
+    const res = await fetch('https://api.fugle.tw/marketdata/v1.0/stock/intraday/quote/2330', {
+      headers: { 'X-API-KEY': apiKey }
+    });
+
+    if (!res.ok) {
+      return { valid: false, message: 'API Key 驗證失敗，請確認輸入內容是否正確。' };
+    }
+
+    const data = await res.json();
+    if (!data || !data.symbol) {
+      return { valid: false, message: 'API Key 驗證失敗，請稍後再試。' };
+    }
+
+    return { valid: true, message: '' };
+  } catch {
+    return { valid: false, message: '無法連線驗證 API Key，請檢查網路後再試。' };
+  }
+}
+
+function initializeAppIfNeeded() {
+  if (appInitialized) return;
+  appInitialized = true;
+  refreshDisplay();
+  startAutoRefresh();
+}
+
+settingsButton.addEventListener('click', () => {
+  const hasStoredKey = !!(localStorage.getItem(API_KEY_STORAGE) || '').trim();
+  showApiKeyModal({ mandatory: !hasStoredKey });
 });
 
 modalCancel.addEventListener('click', () => {
-  hideModal(apiKeyModal);
+  hideApiKeyModalIfAllowed();
 });
 
-modalOk.addEventListener('click', () => {
+modalOk.addEventListener('click', async () => {
   const newKey = modalApiKeyInput.value.trim();
+  const originalLabel = modalOk.textContent;
+  modalOk.disabled = true;
+  modalOk.textContent = '驗證中...';
+
+  const result = await validateApiKey(newKey);
+
+  modalOk.disabled = false;
+  modalOk.textContent = originalLabel;
+
+  if (!result.valid) {
+    alert(result.message);
+    modalApiKeyInput.focus();
+    return;
+  }
+
   localStorage.setItem(API_KEY_STORAGE, newKey);
+  isApiKeyModalMandatory = false;
+  apiKeyModal.classList.remove('is-mandatory');
   hideModal(apiKeyModal);
+  initializeAppIfNeeded();
   refreshDisplay();
+});
+
+modalApiKeyInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    modalOk.click();
+  }
 });
 
 function loadStockList() {
@@ -789,8 +860,12 @@ if (loadStockList().length === 0) {
   ]);
 }
 
-refreshDisplay();
-startAutoRefresh();
+const hasStoredApiKey = !!(localStorage.getItem(API_KEY_STORAGE) || '').trim();
+if (hasStoredApiKey) {
+  initializeAppIfNeeded();
+} else {
+  showApiKeyModal({ mandatory: true });
+}
 
 window.addEventListener('resize', () => {
   refreshDisplay();
@@ -799,6 +874,7 @@ window.addEventListener('resize', () => {
 [apiKeyModal, githubSyncModal].forEach((modalElement) => {
   modalElement.addEventListener('click', (event) => {
     if (event.target === modalElement) {
+      if (modalElement === apiKeyModal && isApiKeyModalMandatory) return;
       hideModal(modalElement);
     }
   });

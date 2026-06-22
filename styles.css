@@ -562,12 +562,16 @@ footer p {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(2, 6, 23, 0.8);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   backdrop-filter: blur(4px);
+}
+
+.modal-overlay.is-mandatory #modal-cancel {
+  display: none;
 }
 
 .modal-overlay.is-hidden {
